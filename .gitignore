@@ -24,3 +24,6 @@ elevator.ip_user_files/
 *_sim_netlist.vhdl
 *_stub.v
 *_stub.vhdl
+
+# xpr
+*.xpr

@@ -75,9 +75,13 @@
 
 ## 开发环境
 
+<div align="center">
+
 |    项目    |              说明              |
 | :-----------: | :-------------------------------: |
 |  EDA 工具  |          Vivado 2019.2          |
 |  FPGA 芯片  | Xilinx Artix-7 XC7A35T-2FGG484I |
 |  输入时钟  |             50 MHz             |
 | UART 波特率 |        115200 baud，8N1        |
+
+</div>

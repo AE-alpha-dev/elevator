@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────
+# Vivado Project — Auto-generated Files
+# ─────────────────────────────────────────────
+
+# Vivado build directories
+elevator.cache/
+elevator.runs/
+elevator.sim/
+elevator.hw/
+elevator.ip_user_files/
+
+# Vivado log and journal files
+*.jou
+*.log
+*.str
+
+# Bitstream and checkpoint files
+*.bit
+*.dcp
+*.mmi
+
+# IP core generated simulation models and stubs
+*_sim_netlist.v
+*_sim_netlist.vhdl
+*_stub.v
+*_stub.vhdl

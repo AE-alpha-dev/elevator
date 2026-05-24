@@ -38,12 +38,43 @@ module elevator_top (
     wire       valid;
     wire [1:0] virtual_key;
 
+    // CDC 调试信号
+    wire        dbg_req;
+    wire        dbg_ack_d1;
+    wire        dbg_ack_d2;
+    wire [7:0]  dbg_data_reg;
+    wire        dbg_req_d1;
+    wire        dbg_req_d2;
+    wire        dbg_req_d3;
+    wire        dbg_ack;
+    wire        dbg_out_valid_d;
+
     // 例化修改后的 PLL IP核 (没有 reset 和 locked)
     clk_wiz_0 u_pll (
         .clk_out1 (clk_50m),  // 供电梯和 FIFO 写侧使用
         .clk_out2 (clk_100m), // 供 UART 和 FIFO 读侧使用
         .clk_in1  (sys_clk)   // 接入物理引脚
     );
+
+// ILA：100MHz 时钟域
+ila_100m u_ila_100m (
+    .clk    ( clk_100m      ),
+    .probe0 ( dbg_data_reg  ),  // [7:0]
+    .probe1 ( dbg_req       ),  // [0:0]
+    .probe2 ( dbg_ack_d1    ),  // [0:0]
+    .probe3 ( dbg_ack_d2    )   // [0:0]
+);
+
+// ILA：50MHz 时钟域
+ila_50m u_ila_50m (
+    .clk    ( clk_50m        ),
+    .probe0 ( dbg_req_d2     ),  // [0:0]
+    .probe1 ( dbg_req_d3     ),  // [0:0]
+    .probe2 ( dbg_ack        ),  // [0:0]
+    .probe3 ( data           ),  // [7:0]  直接用顶层已有的 wire
+    .probe4 ( dbg_out_valid_d),  // [0:0]  触发条件设在这里
+    .probe5 ( dbg_req_d1     )   // [0:0]
+);
 
     // 系统开关模块
     sys_pwr_ctrl u_sys_pwr_ctrl (
@@ -169,15 +200,26 @@ module elevator_top (
     );
     
     // 跨时钟域握手协议模块
-    cdc_handshake u_cdc_handshake(
-        .clk_100m( clk_100m    ), 
-        .clk_50m ( clk_50m     ), 
-        .rst_n   ( sys_rst_n   ),
-        .rx_data ( rx_data     ),
-        .rx_valid( done        ),
-        .data    (data         ),
-        .out_valid(valid)      
-    );
+cdc_handshake u_cdc_handshake(
+    .clk_100m      ( clk_100m       ),
+    .clk_50m       ( clk_50m        ),
+    .rst_n         ( sys_rst_n      ),
+    .rx_data       ( rx_data        ),
+    .rx_valid      ( done           ),
+    .data          ( data           ),
+    .out_valid     ( valid          ),
+
+    // 调试端口
+    .dbg_req        ( dbg_req        ),
+    .dbg_ack_d1     ( dbg_ack_d1     ),
+    .dbg_ack_d2     ( dbg_ack_d2     ),
+    .dbg_data_reg   ( dbg_data_reg   ),
+    .dbg_req_d1     ( dbg_req_d1     ),
+    .dbg_req_d2     ( dbg_req_d2     ),
+    .dbg_req_d3     ( dbg_req_d3     ),
+    .dbg_ack        ( dbg_ack        ),
+    .dbg_out_valid_d( dbg_out_valid_d)
+);
 
     // 指令解析器模块        
     Ins_Dec u_Ins_Dec(

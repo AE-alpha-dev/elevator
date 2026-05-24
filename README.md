@@ -88,3 +88,27 @@
 ## 上板演示
 
 ![上板演示](img/board_demo.jpg)
+
+---
+
+## 上板 ILA 验证
+
+集成 ILA 逻辑分析仪核对 CDC 握手协议进行实机验证，两个 ILA 分别挂载在两个时钟域，完整呈现握手信号的双视角。
+
+### hw_ila_1（100 MHz 发送域）
+
+探针：`dbg_data_reg[7:0]`、`dbg_req`、`dbg_ack_d1`、`dbg_ack_d2`
+
+触发于 `dbg_req` 上升沿。波形显示：`dbg_data_reg` 与 `dbg_req` 同步置位（数据装载并发起请求）；`dbg_ack_d1` 约 6 个周期后上升（ack 从 50 MHz 域跨域同步回来，第一级寄存器）；`dbg_ack_d2` 再延一个周期（第二级寄存器），握手闭环完成。
+
+![hw_ila_1 波形（100 MHz 域）](img/ila_100m_wave.png)
+
+### hw_ila_2（50 MHz 接收域）
+
+探针：`dbg_req_d1`、`dbg_req_d2`、`dbg_req_d3`、`dbg_ack`、`data[7:0]`、`dbg_out_valid_d`
+
+波形显示：`dbg_req_d1/d2/d3` 依次上升（req 经两级同步进入 50 MHz 域）；`dbg_ack` 随后拉高通知发送端；`data` 稳定锁存为 `0x32`；`dbg_out_valid_d` 指示数据有效输出。
+
+![hw_ila_2 波形（50 MHz 域）](img/ila_50m_wave.png)
+
+---

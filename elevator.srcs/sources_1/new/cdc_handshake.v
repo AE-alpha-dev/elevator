@@ -5,7 +5,18 @@ module cdc_handshake (
     input [7:0] rx_data,
     input rx_valid,
     output reg [7:0] data,
-    output out_valid
+    output out_valid,
+    
+    // ILA µ÷ÊÔ¶Ë¿Ú
+    output dbg_req,       // 100MHz Óò
+    output dbg_ack_d1,    // 100MHz Óò
+    output dbg_ack_d2,    // 100MHz Óò
+    output [7:0] dbg_data_reg, // 100MHz Óò
+    output dbg_req_d1,    // 50MHz Óò
+    output dbg_req_d2,    // 50MHz Óò
+    output dbg_req_d3,    // 50MHz Óò
+    output dbg_ack,       // 50MHz Óò
+    output dbg_out_valid_d // 50MHz Óò
 );
 
 reg [7:0] data_reg;
@@ -88,5 +99,16 @@ always @(posedge clk_50m or negedge rst_n) begin
 end
 
 assign out_valid = out_valid_d;
+
+// µ÷ÊÔĞÅºÅÖ±Á¬
+assign dbg_req        = req;
+assign dbg_ack_d1     = ack_d1;
+assign dbg_ack_d2     = ack_d2;
+assign dbg_data_reg   = data_reg;
+assign dbg_req_d1     = req_d1;
+assign dbg_req_d2     = req_d2;
+assign dbg_req_d3     = req_d3;
+assign dbg_ack        = ack;
+assign dbg_out_valid_d = out_valid_d;
 
 endmodule
